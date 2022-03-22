@@ -1,4 +1,5 @@
 empty :=
+REGISTRY := docker.nautil.org
 PROJECT_NAME := linky-exporter
 DIST_FOLDER := dist
 TAG_NAME := $(shell git tag -l --contains HEAD | head -n1)
@@ -38,7 +39,7 @@ info:
 	echo "VERSION = $(VERSION)"
 
 docker:
-	docker build -t syberalexis/linky-exporter --build-arg VERSION=$(VERSION) .
+	docker build -t $(REGISTRY)/$(PROJECT_NAME) --build-arg VERSION=$(VERSION) .
 ifneq ($(VERSION),)
 	docker tag syberalexis/linky-exporter syberalexis/linky-exporter:$(VERSION)
 endif
