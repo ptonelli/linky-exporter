@@ -27,9 +27,12 @@ type LinkyExporter struct {
 func (exporter *LinkyExporter) Run() {
 	log.Info(fmt.Sprintf("Beginning to serve on port :%d", exporter.Port))
 
-	prometheus.MustRegister(collectors.NewLinkyCollector(exporter.Device, exporter.BaudRate,
+	r := prometheus.NewRegistry()
+	r.MustRegister(collectors.NewLinkyCollector(exporter.Device, exporter.BaudRate,
 		byte(exporter.FrameSize), parseParity(exporter.Parity), parseStopBits(exporter.StopBits)))
-	http.Handle("/metrics", promhttp.Handler())
+	//http.Handle("/metrics", promhttp.Handler())
+	handler := promhttp.HandlerFor(r, promhttp.HandlerOpts{})
+	http.Handle("/metrics", handler)
 
 	log.Fatal(http.ListenAndServe(fmt.Sprintf("%s:%d", exporter.Address, exporter.Port), nil))
 }
